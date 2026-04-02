@@ -1,6 +1,7 @@
 # converter.py
-# Student: <Your Name> | Course: <Course Name> | Project: Assignment 7 (PySide6) | Date: <Date>
+# Student: Brian Moore | Project: Assignment 7 (PySide6)
 
+import os
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton,
@@ -14,18 +15,14 @@ INCH_TO_METER = 0.0254
 
 
 def inches_to_meters(inches: float) -> float:
-    """Convert inches to meters."""
     return inches * INCH_TO_METER
 
 
 def meters_to_inches(meters: float) -> float:
-    """Convert meters to inches."""
     return meters / INCH_TO_METER
 
 
 class ConverterWindow(QMainWindow):
-    """Main application window for the measurement converter."""
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Converter App")
@@ -34,12 +31,11 @@ class ConverterWindow(QMainWindow):
         self._reset_form()
 
     def _build_ui(self):
-        """Build and arrange all widgets in the main window."""
         central = QWidget(self)
         self.setCentralWidget(central)
         central.setStyleSheet("background: #e8820a;")
 
-        # title label spanning the top
+        # title label
         self.lblTitle = QLabel("Converter App")
         self.lblTitle.setAlignment(Qt.AlignCenter)
         self.lblTitle.setFont(QFont("Arial", 22, QFont.Bold))
@@ -109,13 +105,14 @@ class ConverterWindow(QMainWindow):
         self.lblResult.setFont(QFont("Arial", 14))
         self.lblResult.setStyleSheet("color: #1a0000; background: transparent;")
 
-        # house image in a white-bordered frame
+        # house image
         self.imgFrame = QFrame()
         self.imgFrame.setFixedSize(200, 180)
         self.imgFrame.setStyleSheet("background: white; border: 2px solid #ffcc88;")
         self.imgLabel = QLabel(self.imgFrame)
         self.imgLabel.setAlignment(Qt.AlignCenter)
-        pix = QPixmap("house.png")
+        img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "house.png")
+        pix = QPixmap(img_path)
         self.imgLabel.setPixmap(
             pix.scaled(190, 170, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
@@ -143,24 +140,18 @@ class ConverterWindow(QMainWindow):
             btn.setStyleSheet(btn_style)
             btn.setFixedHeight(42)
 
-        # grid layout matching the original starter skeleton
+        # grid layout
         grid = QGridLayout(central)
         grid.setContentsMargins(16, 16, 16, 12)
         grid.setSpacing(12)
 
-        # title spans columns 0-1 (left side above prompt/input)
         grid.addWidget(self.lblTitle,   0, 0, 1, 2)
-        # row 1: prompt col 0, input col 1
         grid.addWidget(self.lblPrompt,  1, 0)
         grid.addWidget(self.txtInput,   1, 1)
-        # row 2: radio group spans cols 0-1
         grid.addWidget(self.grp,        2, 0, 1, 2)
-        # row 3: result spans cols 0-1
         grid.addWidget(self.lblResult,  3, 0, 1, 2)
-        # image spans rows 0-3 in col 2
         grid.addWidget(self.imgFrame,   0, 2, 4, 1, Qt.AlignTop)
 
-        # button row spans all 3 columns
         hbtns = QHBoxLayout()
         hbtns.addStretch(1)
         hbtns.addWidget(self.btnConvert)
@@ -169,28 +160,23 @@ class ConverterWindow(QMainWindow):
         grid.addLayout(hbtns,           4, 0, 1, 3)
 
     def _wire_events(self):
-        """Connect widget signals to their handler slots."""
         self.btnConvert.clicked.connect(self.on_convert)
         self.btnClear.clicked.connect(self.on_clear)
         self.btnExit.clicked.connect(QApplication.instance().quit)
 
     def _reset_form(self):
-        """Clear input/output and restore default radio selection."""
         self.txtInput.clear()
         self.lblResult.clear()
         self.rbInToM.setChecked(True)
         self.txtInput.setFocus()
 
     def _error(self, message: str):
-        """Display a critical error dialog with the given message."""
         QMessageBox.critical(self, "Error", message)
 
     def on_clear(self):
-        """Handle Clear button: reset the form to its initial state."""
         self._reset_form()
 
     def on_convert(self):
-        """Handle Convert button: validate input and display the result."""
         text = self.txtInput.text().strip()
 
         # check non-empty
@@ -226,7 +212,6 @@ class ConverterWindow(QMainWindow):
 
 
 def main():
-    """Entry point: create the application and show the main window."""
     app = QApplication(sys.argv)
     w = ConverterWindow()
     w.resize(720, 320)
